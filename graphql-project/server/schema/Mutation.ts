@@ -108,6 +108,49 @@ const Mutation = new GraphQLObjectType({
 				);
 			},
 		},
+
+		removeUser: {
+			type: UserType,
+			args: {
+				id: { type: new GraphQLNonNull(GraphQLString) },
+			},
+			resolve(parent, { id }) {
+				const removedUser = User.findByIdAndRemove(id).exec();
+				if (!removedUser) {
+					throw new Error("User was not removed");
+				}
+
+				return removedUser;
+			},
+		},
+		removeHobby: {
+			type: HobbyType,
+			args: {
+				id: { type: new GraphQLNonNull(GraphQLString) },
+			},
+			resolve(parent, { id }) {
+				const removedHobby = Hobby.findByIdAndRemove(id).exec();
+				if (!removedHobby) {
+					throw new Error("Hobby was not removed");
+				}
+
+				return removedHobby;
+			},
+		},
+		removePost: {
+			type: PostType,
+			args: {
+				id: { type: new GraphQLNonNull(GraphQLString) },
+			},
+			resolve(parent, { id }) {
+				const removedPost = Post.findByIdAndRemove(id).exec();
+				if (!removedPost) {
+					throw new Error("Post was not removed");
+				}
+
+				return removedPost;
+			},
+		},
 	},
 });
 
