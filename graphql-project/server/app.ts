@@ -1,6 +1,8 @@
+import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
+import { graphqlHTTP } from "express-graphql";
 import { createHandler } from "graphql-http/lib/use/express";
 
 import schema from "./schema";
@@ -11,12 +13,20 @@ const app = express();
 
 const port = process.env.PORT || 4000;
 
-app.all(
+app.use(cors());
+app.use(
 	"/graphql",
-	createHandler({
+	graphqlHTTP({
+		graphiql: true,
 		schema,
 	})
 );
+// app.all(
+// 	"/graphql",
+// 	createHandler({
+// 		schema,
+// 	})
+// );
 
 mongoose
 	.connect(
