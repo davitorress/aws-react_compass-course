@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { GraphQLID, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
+import { GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
 
 import UserType from "./objects/User";
 import HobbyType from "./objects/Hobby";
@@ -13,7 +13,7 @@ const RootQuery = new GraphQLObjectType({
 	fields: {
 		user: {
 			type: UserType,
-			args: { id: { type: GraphQLString } },
+			args: { id: { type: GraphQLID } },
 			resolve(parent, { id }) {
 				return _.find(usersData, { id });
 			},
@@ -35,8 +35,54 @@ const RootQuery = new GraphQLObjectType({
 	},
 });
 
+const Mutation = new GraphQLObjectType({
+	name: "Mutation",
+	description: "Mutation description",
+	fields: {
+		createUser: {
+			type: UserType,
+			args: {
+				// id: { type: GraphQLID },
+				name: { type: GraphQLString },
+				age: { type: GraphQLInt },
+				profession: { type: GraphQLString },
+			},
+			resolve(parent, { name, age, profession }) {
+				let user = { name, age, profession };
+				return user;
+			},
+		},
+		createHobby: {
+			type: HobbyType,
+			args: {
+				// id: { type: GraphQLID },
+				title: { type: GraphQLString },
+				description: { type: GraphQLString },
+				userId: { type: GraphQLID },
+			},
+			resolve(parent, { title, description, userId }) {
+				let hobby = { title, description, userId };
+				return hobby;
+			},
+		},
+		createPost: {
+			type: PostType,
+			args: {
+				// id: { type: GraphQLID },
+				comment: { type: GraphQLString },
+				userId: { type: GraphQLID },
+			},
+			resolve(parent, { comment, userId }) {
+				let post = { comment, userId };
+				return post;
+			},
+		},
+	},
+});
+
 const schema = new GraphQLSchema({
 	query: RootQuery,
+	mutation: Mutation,
 });
 
 export default schema;
