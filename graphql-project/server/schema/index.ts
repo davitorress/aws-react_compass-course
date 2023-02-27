@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
+import { GraphQLID, GraphQLInt, GraphQLList, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
 
 import UserType from "./objects/User";
 import HobbyType from "./objects/Hobby";
@@ -18,6 +18,12 @@ const RootQuery = new GraphQLObjectType({
 				return _.find(usersData, { id });
 			},
 		},
+		users: {
+			type: new GraphQLList(UserType),
+			resolve(parent, args) {
+				return usersData;
+			},
+		},
 		hobby: {
 			type: HobbyType,
 			args: { id: { type: GraphQLID } },
@@ -25,11 +31,23 @@ const RootQuery = new GraphQLObjectType({
 				return _.find(hobbiesData, { id });
 			},
 		},
+		hobbies: {
+			type: new GraphQLList(HobbyType),
+			resolve(parent, args) {
+				return hobbiesData;
+			},
+		},
 		post: {
 			type: PostType,
 			args: { id: { type: GraphQLID } },
 			resolve(parent, { id }) {
 				return _.find(postsData, { id });
+			},
+		},
+		posts: {
+			type: new GraphQLList(PostType),
+			resolve(parent, args) {
+				return postsData;
 			},
 		},
 	},
