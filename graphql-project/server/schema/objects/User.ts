@@ -1,10 +1,10 @@
-import _ from "lodash";
 import { GraphQLID, GraphQLInt, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql";
 
 import HobbyType from "./Hobby";
 import PostType from "./Post";
 
-import { hobbiesData, postsData } from "../dummyData";
+import Post from "../../models/post";
+import Hobby from "../../models/hobby";
 
 const UserType: GraphQLObjectType<any, any> = new GraphQLObjectType({
 	name: "User",
@@ -17,13 +17,13 @@ const UserType: GraphQLObjectType<any, any> = new GraphQLObjectType({
 		hobbies: {
 			type: new GraphQLList(HobbyType),
 			resolve(parent, args) {
-				return _.filter(hobbiesData, { userId: parent.id });
+				return Hobby.find({ userId: parent.id });
 			},
 		},
 		posts: {
 			type: new GraphQLList(PostType),
 			resolve(parent, args) {
-				return _.filter(postsData, { userId: parent.id });
+				return Post.find({ userId: parent.id });
 			},
 		},
 	},

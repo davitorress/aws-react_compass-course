@@ -1,9 +1,8 @@
-import _ from "lodash";
 import { GraphQLID, GraphQLObjectType, GraphQLString } from "graphql";
 
 import UserType from "./User";
 
-import { usersData } from "../dummyData";
+import User from "../../models/user";
 
 const HobbyType = new GraphQLObjectType({
 	name: "Hobby",
@@ -15,7 +14,7 @@ const HobbyType = new GraphQLObjectType({
 		user: {
 			type: UserType,
 			resolve(parent, args) {
-				return _.find(usersData, { id: parent.userId });
+				return User.findById({ _id: parent.userId });
 			},
 		},
 	}),
