@@ -6,11 +6,11 @@ import PostType from "./Post";
 
 import { hobbiesData, postsData } from "../dummyData";
 
-const UserType = new GraphQLObjectType({
+const UserType: GraphQLObjectType<any, any> = new GraphQLObjectType({
 	name: "User",
 	description: "User description",
 	fields: {
-		id: { type: GraphQLString },
+		id: { type: GraphQLID },
 		name: { type: GraphQLString },
 		age: { type: GraphQLInt },
 		profession: { type: GraphQLString },

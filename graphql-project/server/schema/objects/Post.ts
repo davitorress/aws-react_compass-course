@@ -8,7 +8,7 @@ import { usersData } from "../dummyData";
 const PostType = new GraphQLObjectType({
 	name: "Post",
 	description: "Post description",
-	fields: {
+	fields: () => ({
 		id: { type: GraphQLID },
 		comment: { type: GraphQLString },
 		user: {
@@ -17,7 +17,7 @@ const PostType = new GraphQLObjectType({
 				return _.find(usersData, { id: parent.userId });
 			},
 		},
-	},
+	}),
 });
 
 export default PostType;

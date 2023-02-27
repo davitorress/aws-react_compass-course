@@ -8,7 +8,7 @@ import { usersData } from "../dummyData";
 const HobbyType = new GraphQLObjectType({
 	name: "Hobby",
 	description: "Hobby description",
-	fields: {
+	fields: () => ({
 		id: { type: GraphQLID },
 		title: { type: GraphQLString },
 		description: { type: GraphQLString },
@@ -18,7 +18,7 @@ const HobbyType = new GraphQLObjectType({
 				return _.find(usersData, { id: parent.userId });
 			},
 		},
-	},
+	}),
 });
 
 export default HobbyType;
