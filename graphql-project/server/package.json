@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
+		"start": "nodemon app.ts",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "Davi Torres",
@@ -23,3 +24,4 @@
 		"ts-node": "^10.9.1"
 	}
 }
+
