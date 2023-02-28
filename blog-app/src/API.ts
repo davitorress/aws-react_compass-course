@@ -126,7 +126,6 @@ export type ModelSubscriptionPostFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   title?: ModelSubscriptionStringInput | null,
   content?: ModelSubscriptionStringInput | null,
-  username?: ModelSubscriptionStringInput | null,
   coverImage?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionPostFilterInput | null > | null,
   or?: Array< ModelSubscriptionPostFilterInput | null > | null,
@@ -283,6 +282,7 @@ export type PostsByUsernameQuery = {
 
 export type OnCreatePostSubscriptionVariables = {
   filter?: ModelSubscriptionPostFilterInput | null,
+  username?: string | null,
 };
 
 export type OnCreatePostSubscription = {
@@ -300,6 +300,7 @@ export type OnCreatePostSubscription = {
 
 export type OnUpdatePostSubscriptionVariables = {
   filter?: ModelSubscriptionPostFilterInput | null,
+  username?: string | null,
 };
 
 export type OnUpdatePostSubscription = {
@@ -317,6 +318,7 @@ export type OnUpdatePostSubscription = {
 
 export type OnDeletePostSubscriptionVariables = {
   filter?: ModelSubscriptionPostFilterInput | null,
+  username?: string | null,
 };
 
 export type OnDeletePostSubscription = {

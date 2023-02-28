@@ -3,8 +3,11 @@
 // this is an auto generated file. This will be overwritten
 
 export const onCreatePost = /* GraphQL */ `
-  subscription OnCreatePost($filter: ModelSubscriptionPostFilterInput) {
-    onCreatePost(filter: $filter) {
+  subscription OnCreatePost(
+    $filter: ModelSubscriptionPostFilterInput
+    $username: String
+  ) {
+    onCreatePost(filter: $filter, username: $username) {
       id
       title
       content
@@ -16,8 +19,11 @@ export const onCreatePost = /* GraphQL */ `
   }
 `;
 export const onUpdatePost = /* GraphQL */ `
-  subscription OnUpdatePost($filter: ModelSubscriptionPostFilterInput) {
-    onUpdatePost(filter: $filter) {
+  subscription OnUpdatePost(
+    $filter: ModelSubscriptionPostFilterInput
+    $username: String
+  ) {
+    onUpdatePost(filter: $filter, username: $username) {
       id
       title
       content
@@ -29,8 +35,11 @@ export const onUpdatePost = /* GraphQL */ `
   }
 `;
 export const onDeletePost = /* GraphQL */ `
-  subscription OnDeletePost($filter: ModelSubscriptionPostFilterInput) {
-    onDeletePost(filter: $filter) {
+  subscription OnDeletePost(
+    $filter: ModelSubscriptionPostFilterInput
+    $username: String
+  ) {
+    onDeletePost(filter: $filter, username: $username) {
       id
       title
       content

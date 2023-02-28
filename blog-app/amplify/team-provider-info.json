@@ -14,6 +14,9 @@
     "categories": {
       "api": {
         "blogapp": {}
+      },
+      "auth": {
+        "blogappc9b00afe": {}
       }
     }
   }
