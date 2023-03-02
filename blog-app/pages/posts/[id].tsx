@@ -19,7 +19,7 @@ export default function Post({ post }: { post: PostType }) {
 			<h1 className="text-5xl mt-4 font-semibold tracking-wide">{post.title}</h1>
 			<p className="text-sm font-light my-4">By {post.username}</p>
 			<div>
-				<ReactMarkdown children={post.content} />
+				<ReactMarkdown children={post.content} className="prose" />
 			</div>
 		</div>
 	);
