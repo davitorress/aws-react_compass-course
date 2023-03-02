@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { GraphQLResult } from "@aws-amplify/api";
 
 import { postsByUsername } from "@/src/graphql/queries";
+import { deletePost as deletePostMutation } from "@/src/graphql/mutations";
 import { Post as PostType, PostsByUsernameQuery } from "@/src/API";
 
 export default function MyPosts() {
@@ -22,6 +23,15 @@ export default function MyPosts() {
 		})) as GraphQLResult<PostsByUsernameQuery>;
 
 		setPosts(postData.data!.postsByUsername!.items);
+	}
+
+	async function deletePost(id: string) {
+		await API.graphql({
+			query: deletePostMutation,
+			variables: { input: { id } },
+			authMode: "AMAZON_COGNITO_USER_POOLS",
+		});
+		fetchPosts();
 	}
 
 	return (
@@ -45,7 +55,9 @@ export default function MyPosts() {
 							<p className="px-4 py-1 text-sm text-purple-600 font-semibold border border-purple-600 rounded-3xl hover:text-white hover:bg-purple-600 hover:border-transparent focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">
 								<Link href={`/posts/${post.id}`}>View Post</Link>
 							</p>
-							<button className="text-sm mr-4 text-red-500 font-semibold">Delete Post</button>
+							<button onClick={() => deletePost(post.id)} className="text-sm mr-4 text-red-500 font-semibold">
+								Delete Post
+							</button>
 						</div>
 					</div>
 				</div>
