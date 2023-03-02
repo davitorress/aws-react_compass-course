@@ -2,11 +2,11 @@ import "easymde/dist/easymde.min.css";
 import "@aws-amplify/ui-react/styles.css";
 
 import { v4 as uuid } from "uuid";
-import { API } from "aws-amplify";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useState, useRef, ChangeEvent } from "react";
+import { API, Storage } from "aws-amplify";
 import { withAuthenticator } from "@aws-amplify/ui-react";
+import { useState, useRef, ChangeEvent } from "react";
 
 import { createPost } from "@/src/graphql/mutations";
 
@@ -14,11 +14,13 @@ const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
 	ssr: false,
 });
 
-const initialState = { id: "", title: "", content: "" };
+const initialState = { id: "", title: "", content: "", coverImage: "" };
 
 function CreatePost() {
 	const router = useRouter();
 	const [post, setPost] = useState(initialState);
+	const [image, setImage] = useState<File | null>(null);
+	const imageFileInput = useRef<HTMLInputElement>(null);
 
 	const { title, content } = post;
 
@@ -34,6 +36,12 @@ function CreatePost() {
 		const id = uuid();
 		post.id = id;
 
+		if (image) {
+			const filename = `${image.name}_${uuid()}`;
+			post.coverImage = filename;
+			await Storage.put(filename, image);
+		}
+
 		await API.graphql({
 			query: createPost,
 			variables: { input: post },
@@ -41,6 +49,16 @@ function CreatePost() {
 		});
 
 		router.push(`/posts/${id}`);
+	}
+
+	async function uploadImage() {
+		imageFileInput.current!.click();
+	}
+
+	function handleChange(e: ChangeEvent<HTMLInputElement>) {
+		const fileUploaded = e.target.files![0];
+		if (!fileUploaded) return;
+		setImage(fileUploaded);
 	}
 
 	return (
@@ -55,7 +73,19 @@ function CreatePost() {
 				onChange={onChange}
 				className="border-b pb-2 text-lg my-4 focus:outline-none w-full font-light text-gray-500"
 			/>
+
+			{image && <img src={URL.createObjectURL(image)} className="my-4" />}
+
 			<SimpleMDE value={post.content} onChange={(value) => setPost({ ...post, content: value })} />
+			<input type="file" ref={imageFileInput} className="absolute w-0 h-0" onChange={handleChange} />
+
+			<button
+				type="button"
+				onClick={uploadImage}
+				className="bg-green-600 text-white font-semibold px-8 py-2 rounded-lg mr-2"
+			>
+				Upload Cover Image
+			</button>
 			<button
 				type="button"
 				onClick={createNewPost}

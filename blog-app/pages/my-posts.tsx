@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import Link from "next/link";
-import { API, Auth } from "aws-amplify";
 import { useEffect, useState } from "react";
+import { API, Auth, Storage } from "aws-amplify";
 import { GraphQLResult } from "@aws-amplify/api";
 
 import { postsByUsername } from "@/src/graphql/queries";
@@ -21,8 +21,17 @@ export default function MyPosts() {
 			query: postsByUsername,
 			variables: { username: `${attributes.sub}::${username}` },
 		})) as GraphQLResult<PostsByUsernameQuery>;
+		const { items } = postData.data!.postsByUsername!;
+		const postWithImages = await Promise.all(
+			items.map(async (post) => {
+				if (post!.coverImage) {
+					post!.coverImage = await Storage.get(post!.coverImage);
+				}
+				return post;
+			})
+		);
 
-		setPosts(postData.data!.postsByUsername!.items);
+		setPosts(postWithImages);
 	}
 
 	async function deletePost(id: string) {
@@ -39,8 +48,11 @@ export default function MyPosts() {
 			{posts.map((post: PostType, index) => (
 				<div
 					key={index}
-					className="py-8 px-8 max-w-xxl mx-auto bg-white rounded-xl shadow-lg space-y-2 sm:items-center sm:space-y-0 sm:space-x-6 mb-2"
+					className="flex py-8 px-8 max-w-xxl mx-auto bg-white rounded-xl shadow-lg space-y-2 sm:items-center sm:space-y-0 sm:space-x-6 mb-2"
 				>
+					{post.coverImage && (
+						<img src={post.coverImage} className="w-36 h-36 bg-contain bg-center rounded-full sm:mx-0 sm:shrink-0" />
+					)}
 					<div className="text-center space-y-2 sm:text-left">
 						<div className="space-y-0.5">
 							<p className="text-lg text-black font-semibold">{post.title}</p>
