@@ -1,17 +1,35 @@
 import "@/configureAmplify";
+import "easymde/dist/easymde.min.css";
 
+import { v4 as uuid } from "uuid";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { API, Storage } from "aws-amplify";
+import { API, Auth, Hub, Storage } from "aws-amplify";
 import ReactMarkdown from "react-markdown";
 import { useEffect, useState } from "react";
 import { GraphQLResult } from "@aws-amplify/api";
 
+import { createComment } from "@/src/graphql/mutations";
 import { listPosts, getPost } from "@/src/graphql/queries";
 import { GetPostQuery, ListPostsQuery, Post as PostType } from "@/src/API";
 
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+	ssr: false,
+});
+
+const initialState = { id: "", message: "", postID: "" };
+
 export default function Post({ post }: { post: PostType }) {
 	const router = useRouter();
+	const [showMe, setShowMe] = useState(false);
+	const [comment, setComment] = useState(initialState);
 	const [coverImage, setCoverImage] = useState<string | null>(null);
+
+	const { message } = comment;
+
+	function toggle() {
+		setShowMe(!showMe);
+	}
 
 	useEffect(() => {
 		updateCoverImage();
@@ -22,6 +40,22 @@ export default function Post({ post }: { post: PostType }) {
 			const imageKey = await Storage.get(post.coverImage);
 			setCoverImage(imageKey);
 		}
+	}
+
+	async function createTheComment() {
+		if (!message) return;
+		const id = uuid();
+		comment.id = id;
+		try {
+			await API.graphql({
+				query: createComment,
+				variables: { input: comment },
+				authMode: "AMAZON_COGNITO_USER_POOLS",
+			});
+		} catch (err) {
+			console.log(err);
+		}
+		router.push("/my-posts");
 	}
 
 	if (router.isFallback) {
@@ -35,6 +69,31 @@ export default function Post({ post }: { post: PostType }) {
 			<p className="text-sm font-light my-4">By {post.username}</p>
 			<div>
 				<ReactMarkdown children={post.content} className="prose" />
+			</div>
+			<div>
+				<button
+					type="button"
+					onClick={toggle}
+					className="my-4 bg-green-600 text-white font-semibold px-8 py-2 rounded-lg"
+				>
+					Write a Comment
+				</button>
+
+				{
+					<div style={{ display: showMe ? "block" : "none" }}>
+						<SimpleMDE
+							value={comment.message}
+							onChange={(value) => setComment({ ...comment, message: value, postID: post.id })}
+						/>
+						<button
+							type="button"
+							onClick={createTheComment}
+							className="mb-4 bg-blue-600 text-white font-semibold px-8 py-2 rounded-lg"
+						>
+							Save
+						</button>
+					</div>
+				}
 			</div>
 		</div>
 	);
