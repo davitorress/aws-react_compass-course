@@ -86,7 +86,7 @@ function EditPost() {
 	return (
 		<div>
 			<h1 className="text-3xl font-semibold tracking-wide mt-6 mb-2">Edit Post</h1>
-			{coverImage && <img src={localImage ? URL.createObjectURL(localImage) : coverImage} className="mt-4" />}
+			{coverImage && <img src={localImage ? URL.createObjectURL(localImage) : coverImage} alt="" className="mt-4" />}
 			<input
 				type="text"
 				name="title"

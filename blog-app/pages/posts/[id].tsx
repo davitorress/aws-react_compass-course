@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { API, Auth, Hub, Storage } from "aws-amplify";
 import ReactMarkdown from "react-markdown";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GraphQLResult } from "@aws-amplify/api";
 
 import { createComment } from "@/src/graphql/mutations";
@@ -22,6 +22,7 @@ const initialState = { id: "", message: "", postID: "" };
 export default function Post({ post }: { post: PostType }) {
 	const router = useRouter();
 	const [showMe, setShowMe] = useState(false);
+	const [signedUser, setSignedUser] = useState(false);
 	const [comment, setComment] = useState(initialState);
 	const [coverImage, setCoverImage] = useState<string | null>(null);
 
@@ -32,15 +33,34 @@ export default function Post({ post }: { post: PostType }) {
 	}
 
 	useEffect(() => {
-		updateCoverImage();
-	}, []);
+		authListener();
+	});
 
-	async function updateCoverImage() {
+	async function authListener() {
+		Hub.listen("auth", (data) => {
+			switch (data.payload.event) {
+				case "signIn":
+					return setSignedUser(true);
+				case "signOut":
+					return setSignedUser(false);
+			}
+		});
+		try {
+			await Auth.currentAuthenticatedUser();
+			setSignedUser(true);
+		} catch (err) {}
+	}
+
+	const updateCoverImage = useCallback(async () => {
 		if (post.coverImage) {
 			const imageKey = await Storage.get(post.coverImage);
 			setCoverImage(imageKey);
 		}
-	}
+	}, [post]);
+
+	useEffect(() => {
+		updateCoverImage();
+	}, [updateCoverImage]);
 
 	async function createTheComment() {
 		if (!message) return;
@@ -65,19 +85,21 @@ export default function Post({ post }: { post: PostType }) {
 	return (
 		<div>
 			<h1 className="text-5xl mt-4 font-semibold tracking-wide">{post.title}</h1>
-			{coverImage && <img src={coverImage} className="mt-4" />}
+			{coverImage && <img src={coverImage} alt="" className="mt-4" />}
 			<p className="text-sm font-light my-4">By {post.username}</p>
 			<div>
 				<ReactMarkdown children={post.content} className="prose" />
 			</div>
 			<div>
-				<button
-					type="button"
-					onClick={toggle}
-					className="my-4 bg-green-600 text-white font-semibold px-8 py-2 rounded-lg"
-				>
-					Write a Comment
-				</button>
+				{signedUser && (
+					<button
+						type="button"
+						onClick={toggle}
+						className="my-4 bg-green-600 text-white font-semibold px-8 py-2 rounded-lg"
+					>
+						Write a Comment
+					</button>
+				)}
 
 				{
 					<div style={{ display: showMe ? "block" : "none" }}>

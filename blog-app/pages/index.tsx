@@ -38,7 +38,11 @@ export default function Home() {
 				<Link key={index} href={`/posts/${post.id}`}>
 					<div className="my-6 pb-6 border-b border-gray-300">
 						{post.coverImage && (
-							<img src={post.coverImage} className="w-36 h-36 bg-contain bg-center rounded-full sm:mx-0 sm:shrink-0" />
+							<img
+								src={post.coverImage}
+								alt=""
+								className="w-36 h-36 bg-contain bg-center rounded-full sm:mx-0 sm:shrink-0"
+							/>
 						)}
 						<div className="cursor-pointer mt-2">
 							<h2 className="text-xl font-semibold">{post.title}</h2>

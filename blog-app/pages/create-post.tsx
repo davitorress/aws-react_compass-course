@@ -74,7 +74,7 @@ function CreatePost() {
 				className="border-b pb-2 text-lg my-4 focus:outline-none w-full font-light text-gray-500"
 			/>
 
-			{image && <img src={URL.createObjectURL(image)} className="my-4" />}
+			{image && <img src={URL.createObjectURL(image)} alt="" className="my-4" />}
 
 			<SimpleMDE value={post.content} onChange={(value) => setPost({ ...post, content: value })} />
 			<input type="file" ref={imageFileInput} className="absolute w-0 h-0" onChange={handleChange} />
