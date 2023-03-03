@@ -1,17 +1,38 @@
 import Link from "next/link";
-import { API, Storage } from "aws-amplify";
-import { useEffect, useState } from "react";
-import { GraphQLResult } from "@aws-amplify/api";
+import { API, Storage, graphqlOperation } from "aws-amplify";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { GraphQLResult, GraphQLSubscription } from "@aws-amplify/api";
 
 import { listPosts } from "@/src/graphql/queries";
-import { ListPostsQuery, Post as PostType } from "@/src/API";
+import { newOnCreatePost } from "@/src/graphql/subscriptions";
+import { ListPostsQuery, Post as PostType, NewOnCreatePostSubscription } from "@/src/API";
 
 export default function Home() {
+	let subOnCreate = useRef<any>(null);
 	const [posts, setPosts] = useState<any[]>([]);
+	const [post, setPost] = useState<GraphQLSubscription<NewOnCreatePostSubscription>>();
+
+	const setUpSubscriptions = useCallback(() => {
+		subOnCreate.current = API.graphql<GraphQLSubscription<NewOnCreatePostSubscription>>(
+			graphqlOperation(newOnCreatePost)
+		).subscribe({
+			next: (postData) => {
+				setPost(postData.value.data);
+			},
+		});
+	}, []);
+
+	useEffect(() => {
+		setUpSubscriptions();
+
+		return () => {
+			subOnCreate.current.unsubscribe();
+		};
+	}, [setUpSubscriptions]);
 
 	useEffect(() => {
 		fetchPosts();
-	}, []);
+	}, [post]);
 
 	async function fetchPosts() {
 		const postData = (await API.graphql({

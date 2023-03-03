@@ -588,6 +588,32 @@ export type CommentsByPostIDQuery = {
   } | null,
 };
 
+export type NewOnCreatePostSubscription = {
+  newOnCreatePost?:  {
+    __typename: "Post",
+    id: string,
+    title: string,
+    content: string,
+    username?: string | null,
+    coverImage?: string | null,
+    comments?:  {
+      __typename: "ModelCommentConnection",
+      items:  Array< {
+        __typename: "Comment",
+        id: string,
+        message?: string | null,
+        postID?: string | null,
+        createdAt: string,
+        updatedAt: string,
+        createdBy?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
 export type OnCreatePostSubscriptionVariables = {
   filter?: ModelSubscriptionPostFilterInput | null,
   username?: string | null,
